@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FrameLayout pour permettre au bouton flottant (FAB) de se superposer à la liste. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gris_fond">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Recherche -->
+        <EditText
+            android:id="@+id/etRecherche"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Rechercher dans la description..."
+            android:inputType="text"
+            android:background="@color/blanc"
+            android:padding="10dp" />
+
+        <!-- Filtre par type -->
+        <Spinner
+            android:id="@+id/spinnerFiltre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blanc"
+            android:layout_marginTop="8dp"
+            android:padding="8dp" />
+
+        <!-- Liste des transactions -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerTransactions"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp" />
+
+        <!-- Message si liste vide -->
+        <TextView
+            android:id="@+id/tvVide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aucune transaction. Appuyez sur + pour en ajouter."
+            android:textColor="@color/gris_texte"
+            android:gravity="center"
+            android:padding="24dp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Bouton flottant d'ajout -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAjouter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="20dp"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/bleu_principal"
+        app:tint="@color/blanc" />
+
+</FrameLayout>

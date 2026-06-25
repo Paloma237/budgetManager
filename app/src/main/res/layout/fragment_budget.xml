@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gris_fond">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tvMoisCourant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Budget du mois"
+            android:textColor="@color/bleu_fonce"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- Définir le budget -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/blanc"
+            android:padding="16dp"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Définir le budget maximum (FCFA)"
+                android:textColor="@color/bleu_fonce"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etBudget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Ex : 100000"
+                android:inputType="numberDecimal"
+                android:layout_marginTop="4dp" />
+
+            <Button
+                android:id="@+id/btnDefinir"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Enregistrer le budget"
+                android:backgroundTint="@color/bleu_principal"
+                android:textColor="@color/blanc"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- Suivi du budget -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/blanc"
+            android:padding="16dp"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Suivi des dépenses"
+                android:textColor="@color/bleu_fonce"
+                android:textStyle="bold" />
+
+            <ProgressBar
+                android:id="@+id/progressBudget"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:layout_marginTop="12dp"
+                android:max="100" />
+
+            <TextView
+                android:id="@+id/tvBudgetDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aucun budget défini pour ce mois"
+                android:textColor="@color/gris_texte"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/tvAlerte"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/rouge_depense"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

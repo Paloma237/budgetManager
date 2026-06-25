@@ -1,142 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Écran unique de BudgetManager.
-  LinearLayout vertical (conforme au cahier des charges, Chapitre 4 du cours) :
-    1. Zone du solde (mise en évidence)
-    2. Zone de saisie (montant, description, type)
-    3. Bouton d'ajout
-    4. Historique (ListView occupant le reste de l'écran)
+  Écran hôte : un conteneur (FrameLayout) qui affiche le fragment courant,
+  et une barre de navigation (BottomNavigationView) fixée en bas.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/gris_fond"
-    android:padding="16dp">
+    android:orientation="vertical">
 
-    <!-- ============ 1. ZONE DU SOLDE ============ -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/bleu_principal"
-        android:padding="16dp"
-        android:gravity="center">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/titre_solde"
-            android:textColor="@color/blanc"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tvSolde"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0 FCFA"
-            android:textColor="@color/blanc"
-            android:textSize="32sp"
-            android:textStyle="bold" />
-
-        <!-- Totaux revenus / dépenses -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
-
-            <TextView
-                android:id="@+id/tvTotalRevenus"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Revenus : 0"
-                android:textColor="@color/blanc"
-                android:textSize="13sp"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/tvTotalDepenses"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Dépenses : 0"
-                android:textColor="@color/blanc"
-                android:textSize="13sp"
-                android:gravity="center" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- ============ 2. ZONE DE SAISIE ============ -->
-    <EditText
-        android:id="@+id/etMontant"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:hint="@string/hint_montant"
-        android:inputType="numberDecimal"
-        android:backgroundTint="@color/bleu_principal" />
-
-    <EditText
-        android:id="@+id/etDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:hint="@string/hint_description"
-        android:inputType="text"
-        android:backgroundTint="@color/bleu_principal" />
-
-    <!-- Choix du type : Dépense ou Revenu -->
-    <RadioGroup
-        android:id="@+id/rgType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
-
-        <RadioButton
-            android:id="@+id/rbDepense"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/type_depense"
-            android:checked="true" />
-
-        <RadioButton
-            android:id="@+id/rbRevenu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/type_revenu" />
-    </RadioGroup>
-
-    <!-- ============ 3. BOUTON D'AJOUT ============ -->
-    <Button
-        android:id="@+id/btnAjouter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/btn_ajouter"
-        android:backgroundTint="@color/bleu_principal"
-        android:textColor="@color/blanc" />
-
-    <!-- ============ 4. HISTORIQUE ============ -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/titre_historique"
-        android:textColor="@color/bleu_fonce"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="4dp" />
-
-    <ListView
-        android:id="@+id/lvHistorique"
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/blanc" />
+        android:layout_weight="1" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/blanc"
+        app:itemIconTint="@color/bleu_principal"
+        app:itemTextColor="@color/bleu_principal"
+        app:menu="@menu/bottom_nav_menu" />
 
 </LinearLayout>

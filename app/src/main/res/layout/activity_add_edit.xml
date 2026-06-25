@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gris_fond">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Montant -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Montant (FCFA)"
+            android:textColor="@color/bleu_fonce"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etMontant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ex : 5000"
+            android:inputType="numberDecimal" />
+
+        <!-- Description -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:textColor="@color/bleu_fonce"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/etDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ex : Courses du marché"
+            android:inputType="text" />
+
+        <!-- Catégorie -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Catégorie"
+            android:textColor="@color/bleu_fonce"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp" />
+
+        <Spinner
+            android:id="@+id/spinnerCategorie"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blanc"
+            android:padding="8dp" />
+
+        <!-- Type -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Type"
+            android:textColor="@color/bleu_fonce"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp" />
+
+        <RadioGroup
+            android:id="@+id/rgType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbDepense"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dépense"
+                android:checked="true" />
+
+            <RadioButton
+                android:id="@+id/rbRevenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Revenu" />
+        </RadioGroup>
+
+        <!-- Date -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:textColor="@color/bleu_fonce"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp" />
+
+        <Button
+            android:id="@+id/btnDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choisir la date"
+            android:backgroundTint="@color/gris_texte"
+            android:textColor="@color/blanc" />
+
+        <!-- Bouton enregistrer -->
+        <Button
+            android:id="@+id/btnEnregistrer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enregistrer"
+            android:backgroundTint="@color/bleu_principal"
+            android:textColor="@color/blanc"
+            android:layout_marginTop="24dp" />
+
+    </LinearLayout>
+</ScrollView>

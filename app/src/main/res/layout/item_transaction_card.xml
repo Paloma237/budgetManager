@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Une ligne de la liste des transactions (RecyclerView). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/blanc"
+    android:padding="14dp"
+    android:layout_marginBottom="2dp"
+    android:gravity="center_vertical">
+
+    <!-- Colonne gauche : catégorie + description + date -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvCategorie"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Catégorie"
+            android:textColor="@color/bleu_fonce"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:textColor="@color/gris_texte"
+            android:textSize="13sp"
+            android:layout_marginTop="2dp" />
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2026-06-25"
+            android:textColor="@color/gris_texte"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <!-- Colonne droite : montant -->
+    <TextView
+        android:id="@+id/tvMontant"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 FCFA"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/vert_revenu" />
+
+</LinearLayout>
