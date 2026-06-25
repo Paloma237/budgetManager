@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         // 3) Préparer l'adaptateur de la liste
         lignesAffichage = new ArrayList<>();
         idsTransactions = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, lignesAffichage);
+        adapter = new ArrayAdapter<>(this, R.layout.item_transaction, lignesAffichage);
         lvHistorique.setAdapter(adapter);
 
         // 4) Listener du bouton "Ajouter"
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 description = "(sans description)";
             }
 
-            String ligne = signe + montant + " FCFA   [" + type + "]\n" + description + "  •  " + date;
+            String ligne = signe + formaterMontant(montant) + " FCFA   [" + type + "]\n" + description + "  •  " + date;
 
             lignesAffichage.add(ligne);
             idsTransactions.add(id);
@@ -168,9 +168,20 @@ public class MainActivity extends AppCompatActivity {
         double totalDepenses = bdd.getTotalParType("depense");
         double solde = totalRevenus - totalDepenses;
 
-        tvSolde.setText(solde + " FCFA");
-        tvTotalRevenus.setText("Revenus : " + totalRevenus);
-        tvTotalDepenses.setText("Dépenses : " + totalDepenses);
+        tvSolde.setText(formaterMontant(solde) + " FCFA");
+        tvTotalRevenus.setText("Revenus : " + formaterMontant(totalRevenus));
+        tvTotalDepenses.setText("Dépenses : " + formaterMontant(totalDepenses));
+    }
+
+    /**
+     * Met en forme un montant : "150 000" au lieu de "150000.0".
+     * (sans décimale si le nombre est entier)
+     */
+    private String formaterMontant(double montant) {
+        if (montant == Math.floor(montant)) {
+            return String.format(Locale.getDefault(), "%,d", (long) montant);
+        }
+        return String.format(Locale.getDefault(), "%,.2f", montant);
     }
 
     /**

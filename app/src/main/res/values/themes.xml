@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Thème principal de l'application -->
-    <style name="Theme.BudgetManager" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <!-- Thème principal de l'application (mode CLAIR uniquement,
+         pour garder un texte foncé lisible et des couleurs cohérentes). -->
+    <style name="Theme.BudgetManager" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <item name="colorPrimary">@color/bleu_principal</item>
         <item name="colorPrimaryVariant">@color/bleu_fonce</item>
         <item name="colorOnPrimary">@color/blanc</item>
