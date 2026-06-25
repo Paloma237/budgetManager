@@ -1,0 +1,4 @@
+// Fichier de build racine, commun à tous les sous-projets.
+plugins {
+    id 'com.android.application' version '8.7.2' apply false
+}

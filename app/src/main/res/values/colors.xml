@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="blanc">#FFFFFFFF</color>
+    <color name="noir">#FF000000</color>
+
+    <color name="bleu_principal">#1976D2</color>
+    <color name="bleu_fonce">#0D47A1</color>
+    <color name="gris_fond">#F5F5F5</color>
+    <color name="gris_texte">#666666</color>
+
+    <color name="vert_revenu">#2E7D32</color>
+    <color name="rouge_depense">#C62828</color>
+</resources>

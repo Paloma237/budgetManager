@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">BudgetManager</string>
+
+    <!-- Écran principal -->
+    <string name="titre_solde">Solde actuel</string>
+    <string name="label_revenus">Revenus</string>
+    <string name="label_depenses">Dépenses</string>
+
+    <string name="hint_montant">Montant (FCFA)</string>
+    <string name="hint_description">Description</string>
+
+    <string name="type_depense">Dépense</string>
+    <string name="type_revenu">Revenu</string>
+
+    <string name="btn_ajouter">Ajouter la transaction</string>
+    <string name="titre_historique">Historique des transactions</string>
+
+    <!-- Messages -->
+    <string name="erreur_montant">Veuillez saisir un montant valide</string>
+    <string name="msg_ajout">Transaction ajoutée</string>
+    <string name="msg_suppression">Transaction supprimée</string>
+    <string name="dialog_titre_suppression">Supprimer</string>
+    <string name="dialog_message_suppression">Voulez-vous supprimer cette transaction ?</string>
+    <string name="oui">Oui</string>
+    <string name="non">Non</string>
+</resources>
