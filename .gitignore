@@ -1,0 +1,17 @@
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.gradle/
+build/
+/captures
+local.properties
+
+# Claude
+.claude/
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Temporaires bureautiques
+~$*
