@@ -98,5 +98,15 @@
                 android:visibility="gone" />
         </LinearLayout>
 
+        <!-- ⚠️ TEMPORAIRE — bouton de démonstration (à retirer en version finale) -->
+        <Button
+            android:id="@+id/btnDemo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Charger des données de démonstration"
+            android:backgroundTint="@color/gris_texte"
+            android:textColor="@color/blanc"
+            android:layout_marginTop="24dp" />
+
     </LinearLayout>
 </ScrollView>

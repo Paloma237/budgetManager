@@ -287,4 +287,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return montant;
     }
+
+    // =====================================================================
+    //  ⚠️ TEMPORAIRE — DONNÉES DE DÉMONSTRATION (pour la présentation)
+    //  À retirer avant la version finale. Remplit la base avec des
+    //  transactions réalistes sur 3 mois et plusieurs catégories.
+    // =====================================================================
+    public void insererDonneesDemo() {
+        // Mois courant (offset 0), mois -1, mois -2
+        // Revenus
+        ajouterTransaction(200000, "revenu", "Salaire", "Salaire du mois", dateOffsetMois(0, 1));
+        ajouterTransaction(200000, "revenu", "Salaire", "Salaire du mois", dateOffsetMois(1, 1));
+        ajouterTransaction(180000, "revenu", "Salaire", "Salaire du mois", dateOffsetMois(2, 1));
+        ajouterTransaction(25000, "revenu", "Cadeau", "Cadeau anniversaire", dateOffsetMois(1, 12));
+
+        // Dépenses — mois courant
+        ajouterTransaction(50000, "depense", "Loyer", "Loyer", dateOffsetMois(0, 3));
+        ajouterTransaction(35000, "depense", "Nourriture", "Courses", dateOffsetMois(0, 8));
+        ajouterTransaction(15000, "depense", "Transport", "Carburant", dateOffsetMois(0, 10));
+        ajouterTransaction(12000, "depense", "Loisirs", "Cinéma", dateOffsetMois(0, 15));
+        ajouterTransaction(8000, "depense", "Santé", "Pharmacie", dateOffsetMois(0, 18));
+
+        // Dépenses — mois -1
+        ajouterTransaction(50000, "depense", "Loyer", "Loyer", dateOffsetMois(1, 3));
+        ajouterTransaction(30000, "depense", "Nourriture", "Courses", dateOffsetMois(1, 9));
+        ajouterTransaction(18000, "depense", "Transport", "Bus", dateOffsetMois(1, 14));
+
+        // Dépenses — mois -2
+        ajouterTransaction(50000, "depense", "Loyer", "Loyer", dateOffsetMois(2, 3));
+        ajouterTransaction(28000, "depense", "Nourriture", "Courses", dateOffsetMois(2, 11));
+        ajouterTransaction(20000, "depense", "Loisirs", "Sortie", dateOffsetMois(2, 16));
+        ajouterTransaction(15000, "depense", "Éducation", "Livres", dateOffsetMois(2, 20));
+
+        // Un budget pour le mois courant (pour la barre de progression)
+        definirBudget(moisCourant(), 150000);
+    }
+
+    /** Renvoie une date "AAAA-MM-JJ" à N mois en arrière, pour un jour donné. */
+    private String dateOffsetMois(int offsetMois, int jour) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.add(java.util.Calendar.MONTH, -offsetMois);
+        cal.set(java.util.Calendar.DAY_OF_MONTH, jour);
+        return String.format("%1$tY-%1$tm-%1$td", cal);
+    }
+
+    private String moisCourant() {
+        return String.format("%1$tY-%1$tm", java.util.Calendar.getInstance());
+    }
 }

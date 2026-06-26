@@ -47,6 +47,14 @@ public class BudgetFragment extends Fragment {
 
         Button btn = vue.findViewById(R.id.btnDefinir);
         btn.setOnClickListener(v -> enregistrerBudget());
+
+        // ⚠️ TEMPORAIRE — données de démonstration pour la présentation
+        Button btnDemo = vue.findViewById(R.id.btnDemo);
+        btnDemo.setOnClickListener(v -> {
+            bdd.insererDonneesDemo();
+            Toast.makeText(requireContext(), "Données de démonstration ajoutées !", Toast.LENGTH_SHORT).show();
+            charger();
+        });
     }
 
     @Override

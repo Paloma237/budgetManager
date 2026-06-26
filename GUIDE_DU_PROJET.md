@@ -1,6 +1,6 @@
-# 📘 Guide du projet — BudgetManager
+# 📘 Guide du projet — BudgetManager (version enrichie)
 
-> Document d'explication complet du **code** de l'application BudgetManager.
+> Document d'explication complet du **code** et des **outils** utilisés.
 > À lire par toute l'équipe pour comprendre le projet et **répondre aux questions de l'enseignant**.
 >
 > Application mobile Android · Langage **Java** · Base de données **SQLite** · Android Studio.
@@ -9,224 +9,201 @@
 
 ## 1. Vue d'ensemble
 
-**BudgetManager** est une application de gestion de budget personnel. L'utilisateur saisit ses **revenus** et ses **dépenses**, et l'application affiche en temps réel son **solde** ainsi que l'**historique** de toutes les transactions. Les données sont stockées **localement** dans une base SQLite (aucun Internet requis).
+**BudgetManager** est une application de gestion de budget personnel **multi-écrans**. L'utilisateur enregistre ses **revenus** et **dépenses** (avec catégorie et date), consulte son **solde**, l'**historique**, des **statistiques graphiques**, et définit un **budget mensuel** avec alerte.
 
-### Architecture (très simple, conforme au cours)
+### Architecture générale
 
-L'application repose sur **2 classes Java** + **1 écran XML** :
+L'application est organisée autour d'**une activité hôte** (`MainActivity`) qui affiche **4 écrans** (Fragments) selon l'onglet choisi dans une **barre de navigation** :
 
 ```
-┌─────────────────────────┐        ┌──────────────────────────┐
-│     MainActivity.java    │  utilise │    DatabaseHelper.java    │
-│  (interface + logique)   │ ───────► │   (base de données SQLite)│
-└───────────┬─────────────┘        └──────────────────────────┘
-            │ affiche
-            ▼
-┌─────────────────────────┐
-│    activity_main.xml     │
-│   (l'écran / interface)  │
-└─────────────────────────┘
+┌──────────────────────────────────────────────┐
+│              MainActivity (hôte)               │
+│  ┌──────────────────────────────────────────┐ │
+│  │   Fragment affiché (1 des 4 écrans)       │ │
+│  └──────────────────────────────────────────┘ │
+│  [🏠 Accueil][💳 Transactions][📊 Stats][⚙️ Budget] │ ← BottomNavigationView
+└──────────────────────────────────────────────┘
 ```
 
-- **MainActivity.java** = le cerveau : gère les clics, calcule le solde, affiche la liste.
-- **DatabaseHelper.java** = la mémoire : enregistre et récupère les transactions dans SQLite.
-- **activity_main.xml** = le visage : ce que l'utilisateur voit et touche.
+Un écran séparé (`AddEditTransactionActivity`) sert à **ajouter ou modifier** une transaction.
 
 ---
 
-## 2. Structure des fichiers du projet
+## 2. Les outils et composants utilisés (IMPORTANT pour l'enseignant)
 
-| Fichier | Rôle | Membre responsable |
-|---------|------|--------------------|
-| `app/src/main/res/layout/activity_main.xml` | L'interface graphique (l'écran) | **LP** (Laura) |
-| `app/src/main/res/values/strings.xml` | Tous les textes affichés | **LP** (Laura) |
-| `app/src/main/res/values/colors.xml` | La palette de couleurs | **LP** (Laura) |
-| `app/src/main/java/.../DatabaseHelper.java` | La base de données SQLite | **MP** (Paloma) |
-| `app/src/main/java/.../MainActivity.java` | La logique de l'application | **KT** (Torres) |
-| `app/src/main/AndroidManifest.xml` | La « carte d'identité » de l'app | **KT** (Torres) |
+Ce tableau explique **chaque outil**, **à quoi il sert** et **où il est utilisé**. C'est la section clé pour la soutenance.
 
-> Le **package** Java du projet est `com.example.budgetmanager`.
+### 2.1 Composants Android de base (vus en cours)
 
----
+| Outil | À quoi ça sert | Où dans le projet |
+|-------|----------------|-------------------|
+| **Activity** | Un écran (ou hôte d'écrans) | `MainActivity`, `AddEditTransactionActivity` |
+| **Fragment** | Un « sous-écran » réutilisable affiché dans une activité | Accueil, Transactions, Statistiques, Budget |
+| **LinearLayout** | Empile les composants (vertical/horizontal) | Tous les layouts |
+| **TextView** | Afficher du texte | Solde, totaux, montants… |
+| **EditText** | Saisir du texte / des nombres | Montant, description, recherche |
+| **Button** | Déclencher une action | Enregistrer, Définir budget… |
+| **RadioGroup / RadioButton** | Choix unique (Dépense **ou** Revenu) | Écran d'ajout |
+| **Spinner** | Menu déroulant (choisir une catégorie) | Écran d'ajout, filtre |
+| **ProgressBar** | Barre de progression (suivi du budget) | Accueil, Budget |
+| **Toast** | Petit message temporaire | Confirmations, erreurs |
+| **AlertDialog** | Boîte de dialogue (confirmer la suppression) | Suppression d'une transaction |
 
-## 3. Explication détaillée de chaque fichier
+### 2.2 Composants plus avancés
 
-### 3.1 `activity_main.xml` — L'interface (responsable : LP)
+| Outil | À quoi ça sert | Où dans le projet |
+|-------|----------------|-------------------|
+| **BottomNavigationView** | La barre de navigation du bas (4 onglets) | `MainActivity` + `bottom_nav_menu.xml` |
+| **RecyclerView** | Afficher une liste performante d'éléments | Liste des transactions, dernières transactions |
+| **Adapter (TransactionAdapter)** | Fait le lien entre les données et la RecyclerView | `TransactionAdapter.java` |
+| **ViewHolder** | Mémorise les vues d'une ligne (performance) | Classe interne `VH` |
+| **DatePickerDialog** | Sélecteur de date (calendrier) | Écran d'ajout |
+| **FloatingActionButton (FAB)** | Le bouton « + » flottant | Écran Transactions |
+| **ActivityResultLauncher** | Rafraîchir la liste au retour de l'écran d'ajout | `TransactionsFragment` |
 
-C'est un **`LinearLayout` vertical** (les éléments sont empilés de haut en bas). Il contient, dans l'ordre :
+### 2.3 Base de données
 
-| Composant | Identifiant (`id`) | Rôle |
-|-----------|--------------------|------|
-| `TextView` | `tvSolde` | Affiche le solde actuel |
-| `TextView` | `tvTotalRevenus` | Affiche le total des revenus |
-| `TextView` | `tvTotalDepenses` | Affiche le total des dépenses |
-| `EditText` | `etMontant` | Saisie du montant (clavier numérique) |
-| `EditText` | `etDescription` | Saisie de la description |
-| `RadioGroup` | `rgType` | Conteneur du choix du type |
-| `RadioButton` | `rbDepense` | Option « Dépense » (cochée par défaut) |
-| `RadioButton` | `rbRevenu` | Option « Revenu » |
-| `Button` | `btnAjouter` | Valide et enregistre la transaction |
-| `ListView` | `lvHistorique` | Affiche la liste des transactions |
+| Outil | À quoi ça sert | Où |
+|-------|----------------|-----|
+| **SQLite** | Base de données locale (sur le téléphone) | Toute l'app |
+| **SQLiteOpenHelper** | Créer et gérer la base | `DatabaseHelper.java` |
+| **ContentValues** | Préparer les données à insérer/modifier | `ajouterTransaction`, `modifierTransaction` |
+| **Cursor** | Parcourir les résultats d'une requête `SELECT` | Toutes les lectures |
 
-**Points clés à expliquer :**
-- L'`EditText` du montant utilise `android:inputType="numberDecimal"` → le clavier n'affiche que des chiffres.
-- La `ListView` a `layout_height="0dp"` + `layout_weight="1"` → elle **occupe tout l'espace restant** en bas de l'écran.
-- Un `RadioGroup` force un **choix unique** : on ne peut cocher que « Dépense » OU « Revenu », jamais les deux.
+### 2.4 Bibliothèque externe
 
----
+| Outil | À quoi ça sert | Où |
+|-------|----------------|-----|
+| **MPAndroidChart** | Dessiner les graphiques (camembert, barres) | `StatistiquesFragment` |
 
-### 3.2 `DatabaseHelper.java` — La base de données (responsable : MP)
-
-Cette classe **hérite de `SQLiteOpenHelper`** (la classe Android standard pour gérer une base SQLite).
-
-**La base s'appelle `budget_db` et contient une seule table : `transactions`.**
-
-| Colonne | Type SQL | Description |
-|---------|----------|-------------|
-| `id` | INTEGER PRIMARY KEY AUTOINCREMENT | Identifiant unique automatique |
-| `montant` | REAL NOT NULL | Le montant (nombre à virgule) |
-| `type` | TEXT NOT NULL | `"revenu"` ou `"depense"` |
-| `description` | TEXT | Libellé (peut être vide) |
-| `date` | TEXT NOT NULL | Date au format `AAAA-MM-JJ` |
-
-**Les méthodes importantes :**
-
-| Méthode | Ce qu'elle fait | SQL utilisé |
-|---------|-----------------|-------------|
-| `onCreate()` | Crée la table au 1er lancement | `CREATE TABLE ...` |
-| `onUpgrade()` | Recrée la table si la version change | `DROP TABLE` + `onCreate` |
-| `ajouterTransaction(...)` | Insère une transaction | `INSERT` (via `ContentValues`) |
-| `getToutesTransactions()` | Récupère toutes les lignes | `SELECT * ... ORDER BY id DESC` |
-| `supprimerTransaction(id)` | Supprime une transaction | `DELETE WHERE id = ?` |
-| `getTotalParType(type)` | Somme des montants d'un type | `SELECT SUM(montant) WHERE type = ?` |
-
-**Concepts à connaître :**
-- **`ContentValues`** : un « panier » de paires colonne→valeur, utilisé pour insérer proprement (évite d'écrire le SQL à la main et protège contre les injections).
-- **`Cursor`** : un « pointeur » qui parcourt les résultats d'un `SELECT`, ligne par ligne (`moveToNext()`).
-- **`getWritableDatabase()` / `getReadableDatabase()`** : ouvrent la base en écriture / lecture.
+> MPAndroidChart est ajoutée dans `app/build.gradle` et récupérée via le dépôt **JitPack** (configuré dans `settings.gradle`).
 
 ---
 
-### 3.3 `MainActivity.java` — La logique (responsable : KT)
+## 3. Les fichiers du projet
 
-C'est l'**activité unique** de l'application. Elle **étend `AppCompatActivity`**.
+### Classes Java (`app/src/main/java/com/example/budgetmanager/`)
 
-**Le cycle :**
+| Fichier | Rôle | Membre |
+|---------|------|--------|
+| `MainActivity.java` | Écran hôte + navigation entre les 4 fragments | **KT** |
+| `AccueilFragment.java` | Écran d'accueil (solde, résumé, budget, dernières transactions) | **KT** |
+| `TransactionsFragment.java` | Liste, recherche, filtre, ajout, **modification**, **suppression** | **KT** |
+| `StatistiquesFragment.java` | Graphiques camembert + barres | **KT** |
+| `BudgetFragment.java` | Définir et suivre le budget mensuel | **KT** |
+| `AddEditTransactionActivity.java` | Écran d'ajout / modification d'une transaction | **KT** |
+| `DatabaseHelper.java` | Base de données SQLite (tables, CRUD, statistiques) | **MP** |
+| `Transaction.java` | Modèle de données (une transaction) | **MP** |
+| `TransactionAdapter.java` | Adaptateur de la RecyclerView | **KT** |
+| `Utils.java` | Fonctions utilitaires (formatage montant, dates) | **KT** |
 
-1. **`onCreate()`** — au lancement :
-   - récupère toutes les vues avec `findViewById(R.id.xxx)` ;
-   - crée l'objet `DatabaseHelper` ;
-   - prépare l'`ArrayAdapter` de la liste ;
-   - branche les **listeners** (clic bouton, appui long liste) ;
-   - appelle `actualiserListe()`.
+### Ressources (`app/src/main/res/`)
 
-2. **`ajouterTransaction()`** — au clic sur « Ajouter » :
-   - lit le montant et la description ;
-   - **vérifie** que le montant est valide (non vide, nombre, positif) → sinon `Toast` d'erreur ;
-   - détermine le type selon le `RadioButton` coché ;
-   - calcule la **date du jour** (`SimpleDateFormat`) ;
-   - enregistre via `bdd.ajouterTransaction(...)` ;
-   - vide les champs et rafraîchit la liste.
-
-3. **`actualiserListe()`** — recharge l'affichage :
-   - vide les listes locales ;
-   - parcourt le `Cursor` de `getToutesTransactions()` ;
-   - construit une ligne de texte par transaction + mémorise son `id` ;
-   - prévient l'`ArrayAdapter` (`notifyDataSetChanged()`) ;
-   - appelle `calculerSolde()`.
-
-4. **`calculerSolde()`** — met à jour les 3 `TextView` :
-   - **`Solde = Total Revenus − Total Dépenses`** (la règle de gestion du projet).
-
-5. **`confirmerSuppression(position)`** — à l'appui long sur une ligne :
-   - affiche une **boîte de dialogue** (`AlertDialog`) de confirmation ;
-   - si « Oui » → `bdd.supprimerTransaction(id)` puis rafraîchit.
-
-**Concepts à connaître :**
-- **Listener** : un « écouteur » d'événement. Ex. `setOnClickListener` réagit au clic.
-- **`ArrayAdapter`** : fait le lien entre une **liste de données** (ArrayList) et la **`ListView`** affichée.
-- **`Toast`** : petit message temporaire en bas de l'écran.
-- **`AlertDialog`** : boîte de dialogue (ici, confirmation de suppression).
-- **Astuce technique** : on garde **deux listes parallèles** — `lignesAffichage` (le texte montré) et `idsTransactions` (l'id en base). À la même position, elles correspondent à la même transaction. C'est ce qui permet de savoir **quel id supprimer** quand on appuie sur une ligne.
+| Fichier | Rôle | Membre |
+|---------|------|--------|
+| `layout/activity_main.xml` | Conteneur + barre de navigation | **LP** |
+| `layout/fragment_*.xml` | Les 4 écrans | **LP** |
+| `layout/activity_add_edit.xml` | Formulaire d'ajout/modification | **LP** |
+| `layout/item_transaction_card.xml` | Une ligne de la liste | **LP** |
+| `menu/bottom_nav_menu.xml` | Les 4 onglets de navigation | **LP** |
+| `values/colors.xml`, `strings.xml`, `themes.xml` | Couleurs, textes, thème | **LP** |
+| `drawable/ic_*.xml` | Les icônes | **LP** |
 
 ---
 
-## 4. Correspondance avec le cours (pour l'enseignant)
+## 4. La base de données en détail (responsable : MP)
 
-| Chapitre | Concept | Où, dans BudgetManager |
-|----------|---------|------------------------|
-| Ch. 3 | Activité & cycle de vie | `MainActivity`, méthode `onCreate()` |
-| Ch. 4 | `LinearLayout` | `activity_main.xml` |
-| Ch. 4 | `TextView`, `EditText`, `Button` | Solde, saisies, bouton |
-| Ch. 4 | `RadioGroup` / `RadioButton` | Choix Dépense / Revenu |
-| Ch. 4 | `ListView` + `ArrayAdapter` | Historique des transactions |
-| Ch. 4 | Gestion des événements | `setOnClickListener`, `setOnItemLongClickListener` |
-| Ch. 4 | Classe `R` (ressources) | `R.id.*`, `R.string.*`, `R.layout.*` |
-| Ch. 5 | `SQLiteOpenHelper` | `DatabaseHelper` |
-| Ch. 5 | `Cursor` | Parcours des résultats dans `actualiserListe()` |
-| Ch. 5 | `ContentValues` | Insertion dans `ajouterTransaction()` |
+**Base `budget_db`, version 2.** Deux tables :
+
+### Table `transactions`
+| Colonne | Type | Description |
+|---------|------|-------------|
+| id | INTEGER PK AUTOINCREMENT | Identifiant unique |
+| montant | REAL | Le montant |
+| type | TEXT | `"revenu"` ou `"depense"` |
+| **categorie** | TEXT | Nourriture, Transport, Loyer… |
+| description | TEXT | Libellé |
+| date | TEXT | Format AAAA-MM-JJ |
+
+### Table `budgets`
+| Colonne | Type | Description |
+|---------|------|-------------|
+| id | INTEGER PK AUTOINCREMENT | Identifiant |
+| mois | TEXT UNIQUE | Format AAAA-MM |
+| montant_max | REAL | Budget maximum du mois |
+
+**Méthodes principales** : `ajouterTransaction`, `modifierTransaction`, `supprimerTransaction`, `getTransactions` (avec filtres), `getTotalParType`, `getDepensesParCategorie` (camembert), `getTotauxParMois` (barres), `definirBudget`, `getBudget`.
+
+> **Migration** : la base est passée de la version 1 à la version 2 via `onUpgrade()`, qui **ajoute la colonne `categorie`** et **crée la table `budgets`** sans détruire les données existantes (`ALTER TABLE`).
 
 ---
 
-## 5. Le déroulement complet (exemple concret)
+## 5. Comment fonctionne chaque écran
 
-**Scénario : l'utilisateur ajoute un revenu de 150 000.**
+- **🏠 Accueil** : affiche le solde global, les revenus/dépenses du mois, la barre de budget, et les 5 dernières transactions. Tout est rechargé dans `onResume()`.
+- **💳 Transactions** : liste toutes les transactions (RecyclerView). On peut **rechercher** (champ texte), **filtrer** (Spinner), **ajouter** (bouton +), **modifier** (clic sur une ligne) et **supprimer** (appui long + confirmation).
+- **📊 Statistiques** : un **camembert** des dépenses par catégorie et un **graphique en barres** des revenus vs dépenses par mois (MPAndroidChart).
+- **⚙️ Budget** : définir le budget du mois, voir le pourcentage utilisé et une **alerte** si dépassement.
 
-1. Il tape `150000` dans le montant, `Salaire` dans la description, coche **Revenu**, clique sur **Ajouter**.
-2. `MainActivity.ajouterTransaction()` valide le montant, lit le type `"revenu"`, calcule la date.
-3. Appel à `DatabaseHelper.ajouterTransaction(150000, "revenu", "Salaire", "2026-06-25")` → ligne insérée dans SQLite.
-4. `actualiserListe()` relit la base → la nouvelle ligne apparaît en haut de la `ListView`.
-5. `calculerSolde()` recalcule : `Solde = revenus − dépenses` → le `tvSolde` se met à jour.
-
-**Pour supprimer :** appui **long** sur une ligne → boîte de dialogue → « Oui » → la transaction disparaît et le solde se recalcule.
+### Règle de gestion importante
+**Le solde ne peut pas devenir négatif** : si l'utilisateur saisit une dépense **supérieure au solde disponible**, l'application **refuse** l'opération avec le message *« Solde insuffisant »* (logique dans `AddEditTransactionActivity.enregistrer()`).
 
 ---
 
 ## 6. Questions probables de l'enseignant (et réponses)
 
-**Q : Pourquoi une seule activité ?**
-> Le cahier des charges impose une architecture simple à activité unique. Toute la logique tient dans `MainActivity`, ce qui suffit pour le périmètre demandé.
+**Q : Pourquoi des Fragments plutôt que plusieurs Activities ?**
+> Un Fragment est un écran réutilisable géré par une activité hôte. Avec une `BottomNavigationView`, c'est l'approche moderne standard : on garde une seule activité et on change juste le Fragment affiché. C'est plus fluide et plus économe que de lancer une nouvelle activité à chaque onglet.
 
-**Q : Comment les données sont-elles conservées après fermeture de l'app ?**
-> Grâce à **SQLite** : les transactions sont écrites sur le disque du téléphone (base `budget_db`). Elles sont toujours là à la réouverture. C'est la **persistance**.
+**Q : Différence entre ListView (version simple) et RecyclerView ?**
+> La `RecyclerView` est plus performante : elle **recycle** les vues (via le `ViewHolder`) au lieu d'en créer une par élément. C'est la version moderne et recommandée de la `ListView`.
 
-**Q : À quoi sert `SQLiteOpenHelper` ?**
-> C'est la classe Android qui gère le cycle de vie de la base : sa **création** (`onCreate`) et ses **mises à jour** (`onUpgrade`). On en hérite dans `DatabaseHelper`.
+**Q : À quoi sert l'Adapter ?**
+> Il fait le **pont** entre les données (la liste de `Transaction`) et l'affichage (la RecyclerView). Il crée une vue par ligne et y place les bonnes valeurs.
 
-**Q : Différence entre `ContentValues` et `Cursor` ?**
-> `ContentValues` sert à **écrire** (on y met les valeurs à insérer). `Cursor` sert à **lire** (il parcourt les résultats d'un `SELECT`).
+**Q : Comment fonctionne la navigation ?**
+> La `BottomNavigationView` détecte l'onglet cliqué. Dans `MainActivity`, on remplace alors le Fragment affiché dans le conteneur via un `FragmentTransaction`.
 
-**Q : Comment le solde est-il calculé ?**
-> `Solde = Total des revenus − Total des dépenses`. On calcule chaque total avec une requête `SELECT SUM(montant) WHERE type = ?`.
+**Q : Comment les graphiques sont-ils générés ?**
+> On utilise la bibliothèque **MPAndroidChart**. On récupère les totaux depuis SQLite (par catégorie pour le camembert, par mois pour les barres) et on les transforme en `PieEntry` / `BarEntry`.
 
-**Q : Comment fonctionne la suppression ?**
-> Un `setOnItemLongClickListener` sur la `ListView` détecte l'appui long. On retrouve l'`id` de la transaction (liste parallèle `idsTransactions`), on demande confirmation via un `AlertDialog`, puis on appelle `DELETE`.
+**Q : Comment les catégories sont-elles gérées ?**
+> Une liste fixe de catégories est définie dans `DatabaseHelper.CATEGORIES`. À l'ajout, l'utilisateur la choisit via un `Spinner`. La catégorie est stockée dans la colonne `categorie`.
+
+**Q : Comment empêchez-vous un solde négatif ?**
+> Avant d'enregistrer une dépense, on calcule le solde disponible. Si le montant dépasse ce solde, on bloque avec un message d'erreur.
+
+**Q : Comment la base évolue-t-elle sans perdre les données ?**
+> Grâce à `onUpgrade()` : en passant de la version 1 à 2, on ajoute la colonne et la table manquantes avec `ALTER TABLE` / `CREATE TABLE`, sans supprimer l'existant.
 
 **Q : Pourquoi `minSdk 24` alors que le cahier dit API 16 ?**
-> Les bibliothèques modernes (AndroidX) ne sont plus compatibles avec l'API 16. On utilise donc une version minimale réaliste (API 24, Android 7.0), ce qui couvre la quasi-totalité des téléphones actuels. Le reste du code suit bien le cahier des charges.
+> Les bibliothèques modernes (AndroidX, Material, RecyclerView) ne sont plus compatibles avec l'API 16. On utilise donc API 24 (Android 7.0), qui couvre la quasi-totalité des téléphones actuels.
 
 ---
 
-## 7. Comment lancer l'application
+## 7. Comment lancer et démontrer l'application
 
-1. Ouvrir le projet dans **Android Studio**.
-2. Laisser **Gradle** se synchroniser (barre en bas).
-3. Brancher un **téléphone Android** (débogage USB activé) **ou** lancer un **émulateur**.
-4. Cliquer sur **▶️ Run**.
-5. Tester : ajouter un revenu, une dépense, vérifier le solde, supprimer par appui long.
+1. Ouvrir le projet dans **Android Studio** et laisser **Gradle** se synchroniser.
+2. Brancher un **téléphone** (débogage USB) ou lancer un **émulateur**.
+3. Cliquer sur **▶️ Run**.
+4. **Pour la présentation** : aller dans l'onglet **⚙️ Budget** → bouton **« Charger des données de démonstration »**. L'app se remplit de transactions réalistes → les graphiques, l'historique et le budget deviennent parlants.
+
+> ⚠️ Le bouton de démonstration est **temporaire** (marqué `TEMPORAIRE` dans le code) : à retirer pour la version finale.
 
 ---
 
 ## 8. Mini-glossaire
 
-- **Activité (Activity)** : un écran de l'application.
-- **Layout** : la disposition des éléments à l'écran (défini en XML).
-- **Widget** : un composant d'interface (bouton, texte, champ…).
-- **SQLite** : base de données légère intégrée à Android.
-- **CRUD** : Create, Read, Update, Delete (créer, lire, modifier, supprimer).
-- **Listener** : code qui réagit à un événement (clic, appui long…).
-- **Toast** : court message temporaire à l'écran.
-- **Persistance** : conservation des données même après fermeture de l'app.
+- **Activity / Fragment** : un écran / un sous-écran réutilisable.
+- **Layout** : la disposition des éléments (en XML).
+- **Adapter / ViewHolder** : relient les données à une liste (RecyclerView).
+- **SQLite / SQLiteOpenHelper** : base de données locale et sa classe de gestion.
+- **Cursor** : parcourt les résultats d'une requête.
+- **ContentValues** : prépare les valeurs à insérer.
+- **Spinner** : menu déroulant.
+- **FAB** : bouton d'action flottant.
+- **MPAndroidChart** : bibliothèque de graphiques.
+- **Persistance** : les données restent même après fermeture de l'app.
 
 ---
 
